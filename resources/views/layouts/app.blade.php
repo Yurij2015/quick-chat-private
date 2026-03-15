@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" id="html-root">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,21 +13,22 @@
 
         <!-- Scripts -->
         <script>
+            // Initial dark mode check to prevent FOUC (Flash of Unstyled Content)
             if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
             } else {
-                document.documentElement.classList.remove('dark')
+                document.documentElement.classList.remove('dark');
             }
         </script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <body class="font-sans antialiased text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
+        <div class="min-h-screen">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white dark:bg-gray-800 shadow dark:shadow-none">
+                <header class="bg-white dark:bg-gray-800 shadow dark:shadow-none transition-colors duration-200">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
@@ -40,38 +41,24 @@
             </main>
         </div>
         <script>
-            var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-            var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+            // Listen for the custom toggle event from the navigation button
+            document.documentElement.addEventListener('toggle-theme', function () {
+                var htmlClasses = document.documentElement.classList;
+                var currentTheme = localStorage.getItem('color-theme');
+                var isDark = false;
 
-            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                themeToggleLightIcon.classList.remove('hidden');
-            } else {
-                themeToggleDarkIcon.classList.remove('hidden');
-            }
-
-            var themeToggleBtn = document.getElementById('theme-toggle');
-
-            themeToggleBtn.addEventListener('click', function() {
-                themeToggleDarkIcon.classList.toggle('hidden');
-                themeToggleLightIcon.classList.toggle('hidden');
-
-                if (localStorage.getItem('color-theme')) {
-                    if (localStorage.getItem('color-theme') === 'light') {
-                        document.documentElement.classList.add('dark');
-                        localStorage.setItem('color-theme', 'dark');
-                    } else {
-                        document.documentElement.classList.remove('dark');
-                        localStorage.setItem('color-theme', 'light');
-                    }
+                if (currentTheme === 'dark' || (!currentTheme && htmlClasses.contains('dark'))) {
+                    htmlClasses.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                    isDark = false;
                 } else {
-                    if (document.documentElement.classList.contains('dark')) {
-                        document.documentElement.classList.remove('dark');
-                        localStorage.setItem('color-theme', 'light');
-                    } else {
-                        document.documentElement.classList.add('dark');
-                        localStorage.setItem('color-theme', 'dark');
-                    }
+                    htmlClasses.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                    isDark = true;
                 }
+                
+                // Dispatch a follow-up event so Alpine components can react visually if needed
+                window.dispatchEvent(new CustomEvent('theme-changed', { detail: { isDark: isDark } }));
             });
         </script>
         @stack('scripts')
