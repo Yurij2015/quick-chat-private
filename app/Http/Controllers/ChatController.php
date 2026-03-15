@@ -13,12 +13,15 @@ class ChatController extends Controller
 {
     public function getMessages(User $user): AnonymousResourceCollection
     {
+        /** @var User $authUser */
+        $authUser = auth()->user();
+
         // Mark all unread messages from this specific user as read
-        auth()->user()->unreadMessages()
+        $authUser->unreadMessages()
             ->where('sender_id', $user->id)
             ->update(['read_at' => now()]);
 
-        $messages = auth()->user()
+        $messages = $authUser
             ->allMessagesWith($user)
             ->oldest()
             ->get();

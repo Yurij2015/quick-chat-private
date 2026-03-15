@@ -9,7 +9,6 @@ services:
     restart: unless-stopped
     volumes:
       - .:/var/www/html
-      - ./docker/nginx/conf.d:/etc/nginx/conf.d
     networks:
       - chat-network
     depends_on:
