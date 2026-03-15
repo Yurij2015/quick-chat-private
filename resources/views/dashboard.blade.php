@@ -5,17 +5,17 @@
         </h2>
     </x-slot>
 
-    <!-- Full-height app container minus standard nav header (approx 65px) -->
+
     <div class="h-[calc(100vh-65px)] flex overflow-hidden font-sans" x-data="chatApp()" @open-chat.window="selectUser($event.detail.id, $event.detail.name)" x-cloak>
         
-        <!-- Users List Sidebar -->
+
         <div class="w-full md:w-80 lg:w-[380px] flex-shrink-0 flex flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 transition-all duration-300 z-20">
-            <!-- Sidebar Header -->
+
             <div class="h-16 px-5 flex items-center justify-between border-b border-gray-100 dark:border-gray-800 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md sticky top-0">
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Повідомлення</h3>
             </div>
             
-            <!-- Contact List -->
+
             <div class="flex-1 overflow-y-auto w-full pb-4 pt-2 px-3 no-scrollbar scroll-smooth">
                 <ul class="space-y-1">
                     @forelse($users as $user)
@@ -63,10 +63,10 @@
             </div>
         </div>
 
-        <!-- Chat Area -->
+
         <div class="flex-1 flex flex-col bg-[#F3F4F6] dark:bg-[#0B1120] relative max-w-full overflow-hidden">
             
-            <!-- Default Empty State -->
+
             <div x-show="!activeUserId" class="flex-1 flex flex-col items-center justify-center text-gray-500 p-8 text-center"
                  x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
                 <div class="w-24 h-24 mb-6 rounded-3xl bg-white dark:bg-gray-800 shadow-xl shadow-gray-200/50 dark:shadow-none flex items-center justify-center transform -rotate-6">
@@ -76,10 +76,10 @@
                 <p class="text-base text-gray-500 dark:text-gray-400 max-w-sm">Виберіть контакт зі списку ліворуч, щоб почати безпечне спілкування в реальному часі.</p>
             </div>
 
-            <!-- Active Chat Interface -->
+
             <div x-show="activeUserId" class="flex-1 flex flex-col h-full overflow-hidden w-full relative" style="display: none;">
                 
-                <!-- Chat Header -->
+
                 <div class="h-16 px-4 sm:px-6 border-b border-gray-200/50 dark:border-gray-800/80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl flex items-center justify-between sticky top-0 z-20 shadow-sm">
                     <div class="flex items-center space-x-3 sm:space-x-4 cursor-pointer group">
                         <div class="relative">
@@ -95,13 +95,13 @@
                     </div>
                 </div>
 
-                <!-- Messages Container -->
-                <!-- Background Pattern -->
+
+
                 <div class="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
                 
                 <div id="messages-container" class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-6 scroll-smooth z-10 w-full relative">
 
-                    <!-- Loading State -->
+
                     <div x-show="isLoading" class="flex justify-center py-6">
                         <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm flex items-center space-x-3">
                             <div class="relative w-5 h-5">
@@ -112,7 +112,7 @@
                         </div>
                     </div>
 
-                    <!-- Empty Messages -->
+
                     <div x-show="!isLoading && messages.length === 0" class="flex flex-col justify-center items-center h-full pb-10">
                         <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-6 py-5 rounded-3xl text-center shadow-sm border border-gray-100 dark:border-gray-700 max-w-xs">
                             <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mx-auto mb-3 text-indigo-500">
@@ -123,7 +123,7 @@
                         </div>
                     </div>
 
-                    <!-- Messages Loop -->
+
                     <div class="flex flex-col justify-end min-h-full space-y-4 lg:space-y-5 pb-2">
                         <template x-for="(msg, index) in messages" :key="msg.id || index">
                             <div x-show="msg" class="flex w-full" :class="isMe(msg) ? 'justify-end' : 'justify-start'"
@@ -133,7 +133,7 @@
                                 
                                 <div class="flex max-w-[85%] md:max-w-[75%] lg:max-w-[65%]" :class="isMe(msg) ? 'flex-row-reverse' : 'flex-row'">
                                     
-                                    <!-- Avatar for received messages -->
+
                                     <template x-if="!isMe(msg)">
                                         <div class="flex-shrink-0 mr-3 mt-auto hidden sm:block">
                                             <div class="w-7 h-7 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white text-[10px] font-bold shadow-sm" x-text="activeUserName ? activeUserName.charAt(0) : ''"></div>
@@ -149,10 +149,10 @@
                                             <p x-html="msg.text.replace(/\n/g, '<br>')" class="leading-relaxed"></p>
                                         </div>
                                         
-                                        <!-- Timestamp -->
+
                                         <div class="flex items-center text-[11px] mt-1.5 px-1 font-medium text-gray-400 dark:text-gray-500 select-none">
                                             <span x-text="msg.created_at_human"></span>
-                                            <!-- Read Receipts Mock -->
+
                                             <template x-if="isMe(msg)">
                                                 <svg class="w-3.5 h-3.5 ml-1 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                                             </template>
@@ -164,11 +164,11 @@
                     </div>
                 </div>
 
-                <!-- Input Area -->
+
                 <div class="px-4 py-4 sm:px-6 sm:py-5 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-800 z-20">
                     <form @submit.prevent="sendMessage" class="flex items-end space-x-2 sm:space-x-3 max-w-5xl mx-auto relative">
                         
-                        <!-- Attachments Mock Button Removed -->
+
                         
                         <div class="relative flex-1 bg-[#F3F4F6] dark:bg-gray-800 rounded-3xl border border-transparent focus-within:border-indigo-300 dark:focus-within:border-indigo-700/50 focus-within:ring-4 focus-within:ring-indigo-100/50 dark:focus-within:ring-indigo-900/20 transition-all shadow-inner shadow-gray-200/20 dark:shadow-none flex items-center group">
                             <textarea x-model="newMessage" x-ref="messageInput" required rows="1"

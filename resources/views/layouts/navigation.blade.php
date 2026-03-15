@@ -25,15 +25,15 @@
                     </div>
                 </div>
             </div>
-            <!-- Decorative background pattern for dark mode -->
+
             <div class="absolute inset-0 opacity-10 dark:opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, currentColor 1px, transparent 1px); background-size: 16px 16px; color: #eab308;"></div>
         </div>
     @endif
-    <!-- Primary Navigation Menu -->
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex items-center">
-                <!-- Logo -->
+
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2 group">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200/50 dark:shadow-indigo-900/20 group-hover:scale-105 transition-transform">
@@ -43,7 +43,7 @@
                     </a>
                 </div>
 
-                <!-- Navigation Links -->
+
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <a href="{{ route('dashboard') }}" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out {{ request()->routeIs('dashboard') ? 'border-indigo-500 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-700' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-600' }}">
                         Головна
@@ -51,10 +51,10 @@
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
+
             <div class="hidden sm:flex sm:items-center sm:ms-6 space-x-3">
                 
-                <!-- Notifications Dropdown -->
+
                 <div class="relative" x-data="{ open: false, totalUnread: 0, senders: [] }" 
                      @unread-updated.window="totalUnread = $event.detail.count; senders = $event.detail.senders;">
                     <button @click="open = !open" @click.away="open = false" class="p-2 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none relative">
@@ -110,15 +110,15 @@
                     </div>
                 </div>
 
-                <!-- Theme Toggle Button - Fixed scope using root window access -->
+
                 <button type="button" 
                         onclick="document.documentElement.dispatchEvent(new CustomEvent('toggle-theme'))"
                         x-data="{ isDark: document.documentElement.classList.contains('dark') }"
                         @theme-changed.window="isDark = $event.detail.isDark"
                         class="p-2 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none">
-                    <!-- Dark mode icon -->
+
                     <svg x-show="!isDark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" style="display: none;"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                    <!-- Light mode icon -->
+
                     <svg x-show="isDark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" style="display: none;"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
                 </button>
 
@@ -152,7 +152,7 @@
                             Налаштування профілю
                         </x-dropdown-link>
 
-                        <!-- Authentication -->
+
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <x-dropdown-link :href="route('logout')"
@@ -165,7 +165,7 @@
                 </x-dropdown>
             </div>
 
-            <!-- Hamburger -->
+
             <div class="-me-2 flex items-center sm:hidden">
                 <button type="button" 
                         onclick="document.documentElement.dispatchEvent(new CustomEvent('toggle-theme'))"
@@ -184,7 +184,7 @@
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
+
     <div x-show="open" 
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0 -translate-y-4"
@@ -199,7 +199,7 @@
             </x-responsive-nav-link>
         </div>
 
-        <!-- Responsive Settings Options -->
+
         <div class="pt-4 pb-2 border-t border-gray-200 dark:border-gray-700">
             <div class="px-4 flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shadow-sm">
@@ -216,7 +216,7 @@
                     Налаштування профілю
                 </x-responsive-nav-link>
 
-                <!-- Authentication -->
+
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <x-responsive-nav-link :href="route('logout')"
