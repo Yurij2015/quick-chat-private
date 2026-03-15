@@ -1,0 +1,98 @@
+services:
+  # PHP Server & Nginx (For HTTP Requests)
+  laravelfpm:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    image: chat-app-prod-php:latest
+    container_name: chat-app-prod-php
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - chat-network
+    depends_on:
+      - mysql
+      - redis
+
+  # Web Server (Nginx) to proxy to PHP-FPM
+  webserver:
+    image: nginx:alpine
+    container_name: chat-app-prod-web
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8050}:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - chat-network
+    depends_on:
+      - laravelfpm
+
+  # Database
+  mysql:
+    image: mysql:8.4
+    container_name: chat-app-prod-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+      - prod-db-data:/var/lib/mysql
+    networks:
+      - chat-network
+
+  # Redis for queues, cache, and Reverb
+  redis:
+    image: redis:alpine
+    container_name: chat-app-prod-redis
+    restart: unless-stopped
+    volumes:
+      - prod-redis-data:/data
+    networks:
+      - chat-network
+
+  # Reverb WebSocket Server
+  reverb:
+    image: chat-app-prod-php:latest
+    container_name: chat-app-prod-reverb
+    restart: unless-stopped
+    command: php artisan reverb:start --host="0.0.0.0" --port=8080
+    ports:
+      - "${REVERB_SERVER_PORT:-8051}:8080"
+    volumes:
+      - .:/var/www/html
+    networks:
+      - chat-network
+    depends_on:
+      - redis
+      - mysql
+
+  # Queue Worker
+  worker:
+    image: chat-app-prod-php:latest
+    container_name: chat-app-prod-worker
+    restart: unless-stopped
+    command: php artisan queue:work --tries=3 --timeout=90
+    volumes:
+      - .:/var/www/html
+    networks:
+      - chat-network
+    depends_on:
+      - redis
+      - mysql
+
+networks:
+  chat-network:
+    driver: bridge
+
+volumes:
+  prod-db-data:
+    driver: local
+  prod-redis-data:
+    driver: local
