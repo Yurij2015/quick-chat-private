@@ -13,6 +13,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('/messages/unread', [ChatController::class, 'getUnreadMessages']);
     Route::get('/messages/{user}', [ChatController::class, 'getMessages'])->name('messages.index');
     Route::post('/messages', [ChatController::class, 'sendMessage'])->name('messages.store');
 
@@ -20,6 +21,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('role:admin')
         ->name('impersonate')
         ->where('user', '[0-9]+');
+
+    Route::post('/impersonate/leave', [ImpersonationController::class, 'leave'])
+        ->name('impersonate.leave');
 });
 
 Route::middleware('auth')->group(function () {

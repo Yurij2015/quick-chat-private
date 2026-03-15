@@ -1,26 +1,18 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-white leading-tight">
             {{ __('Real-Time Chat Dashboard') }}
         </h2>
     </x-slot>
 
     <!-- Full-height app container minus standard nav header (approx 65px) -->
-    <div class="h-[calc(100vh-65px)] flex overflow-hidden font-sans" x-data="chatApp()" x-cloak>
+    <div class="h-[calc(100vh-65px)] flex overflow-hidden font-sans" x-data="chatApp()" @open-chat.window="selectUser($event.detail.id, $event.detail.name)" x-cloak>
         
         <!-- Users List Sidebar -->
         <div class="w-full md:w-80 lg:w-[380px] flex-shrink-0 flex flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 transition-all duration-300 z-20">
             <!-- Sidebar Header -->
             <div class="h-16 px-5 flex items-center justify-between border-b border-gray-100 dark:border-gray-800 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md sticky top-0">
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Повідомлення</h3>
-                <div class="flex items-center space-x-2">
-                    <button class="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                    </button>
-                    <button class="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>
-                    </button>
-                </div>
             </div>
             
             <!-- Contact List -->
@@ -101,14 +93,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center space-x-1 sm:space-x-2">
-                        <button class="p-2 sm:p-2.5 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors rounded-full hover:bg-indigo-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-gray-700">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                        </button>
-                        <button class="p-2 sm:p-2.5 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors rounded-full hover:bg-indigo-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-gray-700">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>
-                        </button>
-                    </div>
                 </div>
 
                 <!-- Messages Container -->
@@ -184,22 +168,14 @@
                 <div class="px-4 py-4 sm:px-6 sm:py-5 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-800 z-20">
                     <form @submit.prevent="sendMessage" class="flex items-end space-x-2 sm:space-x-3 max-w-5xl mx-auto relative">
                         
-                        <!-- Attachments Mock Button -->
-                        <button type="button" class="p-3 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex-shrink-0 hidden sm:flex">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
-                        </button>
+                        <!-- Attachments Mock Button Removed -->
                         
                         <div class="relative flex-1 bg-[#F3F4F6] dark:bg-gray-800 rounded-3xl border border-transparent focus-within:border-indigo-300 dark:focus-within:border-indigo-700/50 focus-within:ring-4 focus-within:ring-indigo-100/50 dark:focus-within:ring-indigo-900/20 transition-all shadow-inner shadow-gray-200/20 dark:shadow-none flex items-center group">
                             <textarea x-model="newMessage" x-ref="messageInput" required rows="1"
                                 @keydown.enter.prevent="sendMessage"
-                                class="w-full bg-transparent border-none text-gray-900 dark:text-white text-[15px] resize-none focus:ring-0 py-3.5 pl-5 pr-12 max-h-32 rounded-3xl no-scrollbar placeholder-gray-400 dark:placeholder-gray-500"
+                                class="w-full bg-transparent border-none text-gray-900 dark:text-white text-[15px] resize-none focus:ring-0 py-3.5 pl-5 pr-5 max-h-32 rounded-3xl no-scrollbar placeholder-gray-400 dark:placeholder-gray-500"
                                 placeholder="Напишіть повідомлення..." :disabled="isSending"
                                 oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px'"></textarea>
-                                
-                            <!-- Emoji Placeholder -->
-                            <button type="button" class="absolute right-3 p-1.5 text-gray-400 hover:text-yellow-500 transition-colors rounded-full outline-none">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            </button>
                         </div>
 
                         <button type="submit" :disabled="isSending || !newMessage.trim()"
@@ -231,6 +207,17 @@
                 audio: new Audio('/sounds/notification.mp3'),
 
                 init() {
+                    // Restore active user from localStorage
+                    const savedUserId = localStorage.getItem('activeUserId');
+                    const savedUserName = localStorage.getItem('activeUserName');
+                    
+                    if (savedUserId && savedUserName) {
+                        this.selectUser(parseInt(savedUserId), savedUserName);
+                    }
+
+                    // Fetch offline unread messages first
+                    this.fetchUnreadMessages();
+
                     // Initialize Laravel Echo listener on the current user's private channel
                     if (window.Echo) {
                         window.Echo.private(`user.${this.currentUserId}`)
@@ -259,9 +246,49 @@
                                 } else {
                                     // Notification for message from someone else
                                     this.notify(e.message);
+                                    // Update the bell icon since we have a new unread message
+                                    this.updateUnreadCountSilently();
                                 }
                             });
                     }
+                },
+
+                fetchUnreadMessages() {
+                    axios.get('/messages/unread')
+                        .then(response => {
+                            const unreadMsgs = Array.isArray(response.data.data) ? response.data.data : [];
+                            
+                            // Dispatch event to update bell icon
+                            const sendersList = this.processUnreadData(unreadMsgs);
+                            window.dispatchEvent(new CustomEvent('unread-updated', { detail: { count: unreadMsgs.length, senders: sendersList } }));
+
+                            if (unreadMsgs.length > 0) {
+                                // Group by sender for a cleaner notification, or just show them sequentially.
+                                // We reverse to show oldest first.
+                                const showNotifications = () => {
+                                    if (!window.Notyf) {
+                                        // Wait 100ms if Notyf isn't loaded yet
+                                        setTimeout(showNotifications, 100);
+                                        return;
+                                    }
+                                    
+                                    [...unreadMsgs].reverse().forEach((msg, index) => {
+                                        setTimeout(() => {
+                                            window.Notyf.success({
+                                                message: `<b>${msg.sender_name} (Офлайн)</b>: ${msg.text}`,
+                                                ripple: true,
+                                                dismissible: true,
+                                                duration: 7000 + (index * 500)
+                                            });
+                                            this.playSound();
+                                        }, index * 1000); 
+                                    });
+                                };
+                                
+                                showNotifications();
+                            }
+                        })
+                        .catch(error => console.error('Error fetching unread messages:', error));
                 },
 
                 playSound() {
@@ -285,6 +312,11 @@
                     if (this.activeUserId === id) return;
                     this.activeUserId = id;
                     this.activeUserName = name;
+                    
+                    // Persist to localStorage
+                    localStorage.setItem('activeUserId', id);
+                    localStorage.setItem('activeUserName', name);
+                    
                     this.messages = [];
                     this.fetchMessages();
                     this.$nextTick(() => this.$refs.messageInput?.focus());
@@ -298,6 +330,8 @@
                         .then(response => {
                             this.messages = Array.isArray(response.data.data) ? response.data.data : [];
                             this.scrollToBottom();
+                            // Re-fetch global unread count to update the bell after opening a chat
+                            this.updateUnreadCountSilently();
                         })
                         .catch(error => {
                             console.error('Error fetching messages:', error);
@@ -306,6 +340,34 @@
                         .finally(() => {
                             this.isLoading = false;
                         });
+                },
+
+                updateUnreadCountSilently() {
+                     axios.get('/messages/unread')
+                        .then(response => {
+                            const unreadMsgs = Array.isArray(response.data.data) ? response.data.data : [];
+                            const sendersList = this.processUnreadData(unreadMsgs);
+                            window.dispatchEvent(new CustomEvent('unread-updated', { detail: { count: unreadMsgs.length, senders: sendersList } }));
+                        })
+                        .catch(() => {});
+                },
+
+                processUnreadData(unreadMsgs) {
+                    const sendersMap = new Map();
+                    unreadMsgs.forEach(msg => {
+                        if (!sendersMap.has(msg.sender_id)) {
+                            sendersMap.set(msg.sender_id, { 
+                                id: msg.sender_id, 
+                                name: msg.sender_name, 
+                                count: 1, 
+                                text: msg.text, 
+                                time: msg.created_at_human 
+                            });
+                        } else {
+                            sendersMap.get(msg.sender_id).count++;
+                        }
+                    });
+                    return Array.from(sendersMap.values());
                 },
 
                 sendMessage() {

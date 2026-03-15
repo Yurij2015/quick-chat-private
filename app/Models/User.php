@@ -42,6 +42,15 @@ class User extends Authenticatable
         return $this->hasMany(Message::class, 'receiver_id');
     }
 
+    /**
+     * Get the unread messages sent to this user.
+     * Note: 'receiver_id' is the foreign key since these are messages RECEIVED by this user.
+     */
+    public function unreadMessages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'receiver_id')->whereNull('read_at');
+    }
+
     public function allMessagesWith(User $user): Builder
     {
         return Message::where(function ($query) use ($user) {

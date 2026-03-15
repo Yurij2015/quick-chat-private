@@ -13,9 +13,24 @@ class ChatController extends Controller
 {
     public function getMessages(User $user): AnonymousResourceCollection
     {
+        // Mark all unread messages from this specific user as read
+        auth()->user()->unreadMessages()
+            ->where('sender_id', $user->id)
+            ->update(['read_at' => now()]);
+
         $messages = auth()->user()
             ->allMessagesWith($user)
             ->oldest()
+            ->get();
+
+        return MessageResource::collection($messages);
+    }
+
+    public function getUnreadMessages(): AnonymousResourceCollection
+    {
+        $messages = auth()->user()->unreadMessages()
+            ->with('sender')
+            ->latest()
             ->get();
 
         return MessageResource::collection($messages);
@@ -27,6 +42,9 @@ class ChatController extends Controller
             'receiver_id' => $request->receiver_id,
             'text' => $request->text,
         ]);
+
+        // Eager load sender so the resource has it immediately
+        $message->load('sender');
 
         broadcast(new MessageSent($message))->toOthers();
 
