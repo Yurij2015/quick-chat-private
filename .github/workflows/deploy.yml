@@ -131,7 +131,7 @@ jobs:
           ACTIVE_RELEASE_PATH: ${{ matrix.server.path }}/current
           STORAGE_PATH: ${{ matrix.server.path }}/storage
           BASE_PATH: ${{ matrix.server.path }}
-          LARAVEL_ENV: ${{ secrets.LARAVEL_ENV }}
+          LARAVEL_ENV: ${{ secrets.LARAVEL_ENV || vars.LARAVEL_ENV }}
         with:
           host: ${{ matrix.server.ip }}
           username: ${{ matrix.server.username }}
@@ -139,12 +139,13 @@ jobs:
           port: ${{ matrix.server.port }}
           envs: GITHUB_SHA,RELEASE_PATH,ACTIVE_RELEASE_PATH,STORAGE_PATH,BASE_PATH,LARAVEL_ENV
           script: |
-            # Save secrets to .env file if provided in repo secrets
+            # Save secrets to .env file if provided in repo secrets OR vars
             if [ ! -z "$LARAVEL_ENV" ]; then
-              printf "%s" "$LARAVEL_ENV" > "${BASE_PATH}/.env"
+              printf "%s\n" "$LARAVEL_ENV" > "${BASE_PATH}/.env"
+              echo "Updated .env from GitHub secrets/vars."
             fi
             
-            # If no .env is created and backup exists, restore it
+            # If no .env is created and backup exists, restore it (fallback)
             if [ ! -s "${BASE_PATH}/.env" ] && [ -e "${BASE_PATH}/.env_prev" ]; then
               cp "${BASE_PATH}/.env_prev" "${BASE_PATH}/.env"
               echo "Restored .env file from backup."
@@ -171,7 +172,7 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           RELEASE_PATH: ${{ matrix.server.path }}/releases/${{ github.sha }}
           ACTIVE_RELEASE_PATH: ${{ matrix.server.path }}/current
-          STORAGE_PATH: ${{ matrix.server.path }}/storage
+          STORAGE_PATH: ${{ matrix.server.path }}
           BASE_PATH: ${{ matrix.server.path }}
         with:
           host: ${{ matrix.server.ip }}
@@ -180,16 +181,8 @@ jobs:
           port: ${{ matrix.server.port }}
           envs: GITHUB_SHA,RELEASE_PATH,ACTIVE_RELEASE_PATH,STORAGE_PATH,BASE_PATH
           script: |
-            # Start Docker containers
             cd $RELEASE_PATH
-            docker compose up -d --build || docker-compose up -d --build
-
-            # Setup Laravel specific tasks inside the container
-            docker compose exec -T laravel.test php artisan optimize:clear || true
-            docker compose exec -T laravel.test php artisan optimize || true
-            docker compose exec -T laravel.test php artisan storage:link || true
-
-            # Execute final user-defined application hooks
+            # Run the user-defined afterHooks which handle docker and migrations
             ${{ matrix.server.afterHooks }}
 
   clean-up:
