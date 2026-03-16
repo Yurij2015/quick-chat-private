@@ -87,7 +87,7 @@ jobs:
             mkdir -p ${{ matrix.server.path }}/storage/framework/sessions
             mkdir -p ${{ matrix.server.path }}/storage/framework/testing
             mkdir -p ${{ matrix.server.path }}/storage/framework/views
-            chmod -R 0777 ${{ matrix.server.path }}/storage
+            chmod -R 0777 ${{ matrix.server.path }}/storage || true
 
   run-before-hooks:
     name: "${{ matrix.server.name }}: Before hook"
