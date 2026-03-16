@@ -31,7 +31,7 @@ WORKDIR /var/www/html
 COPY . /var/www/html
 
 # Ensure storage directory and its children exist explicitly
-# We remove any existing storage entry first because it might be a symlink 
+# We remove any existing storage entry first because it might be a symlink
 # to a path outside the container context, which blocks mkdir.
 RUN rm -rf storage && mkdir -p storage/app/public \
     && mkdir -p storage/framework/cache \
@@ -53,9 +53,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libicu-dev \
     libzip-dev \
     libpng-dev \
+    libpq-dev \
     libfcgi-bin \
     procps \
     && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Copy PHP extensions from the builder stage
+COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
+COPY --from=builder /usr/local/bin/docker-php-ext-* /usr/local/bin/
 
 # Download and install php-fpm health check script
 RUN curl -o /usr/local/bin/php-fpm-healthcheck \
