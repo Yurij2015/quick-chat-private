@@ -151,8 +151,8 @@ jobs:
               echo "Restored .env file from backup."
             fi
 
-            # Symlink the .env configuration and the shared storage directory to this deployment
-            ln -s -f ${BASE_PATH}/.env $RELEASE_PATH/.env
+            # Copy the .env configuration and symlink the shared storage directory to this deployment
+            cp ${BASE_PATH}/.env $RELEASE_PATH/.env
             ln -s -f $STORAGE_PATH $RELEASE_PATH/storage
             
             # Switch the active release

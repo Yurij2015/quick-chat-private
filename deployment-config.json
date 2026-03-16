@@ -6,7 +6,7 @@
         "username": "yurii",
         "path": "/home/yurii/quick-chat",
         "beforeHooks": "echo 'Starting deployment for Quick Chat...'",
-        "afterHooks": "cd $RELEASE_PATH && cp $BASE_PATH/.env .env && docker compose -p chat-app -f compose.prod.yaml up -d --remove-orphans --build && sleep 10 && docker exec chat-app-prod-php php artisan migrate --force",
+        "afterHooks": "cd $RELEASE_PATH && docker compose -p chat-app -f compose.prod.yaml up -d --remove-orphans --build && sleep 10 && docker exec chat-app-prod-php php artisan migrate --force",
         "backupImages": false
     }
 ]
