@@ -31,8 +31,9 @@ WORKDIR /var/www/html
 COPY . /var/www/html
 
 # Ensure storage directory and its children exist explicitly
-# This guarantees that the COPY --from=builder command in the next stage will find these paths
-RUN mkdir -p storage/app/public \
+# We remove any existing storage entry first because it might be a symlink 
+# to a path outside the container context, which blocks mkdir.
+RUN rm -rf storage && mkdir -p storage/app/public \
     && mkdir -p storage/framework/cache \
     && mkdir -p storage/framework/sessions \
     && mkdir -p storage/framework/testing \

@@ -6,7 +6,7 @@
         "username": "yurii",
         "path": "/home/yurii/quick-chat",
         "beforeHooks": "echo 'Starting deployment for Quick Chat...'",
-        "afterHooks": "cd $RELEASE_PATH && docker compose -p chat-app -f compose.prod.yaml up -d --remove-orphans --build && docker exec chat-app-prod-php php artisan config:clear && echo 'Waiting for MySQL connection...' && for i in {1..30}; do if docker exec chat-app-prod-php php artisan migrate:status > /dev/null 2>&1; then break; fi; echo -n '.'; sleep 2; done && docker exec chat-app-prod-php php artisan migrate --force",
+        "afterHooks": "cd $RELEASE_PATH && docker compose -p chat-app -f compose.prod.yaml up -d --remove-orphans --build && docker exec chat-app-prod-php php artisan migrate --force",
         "backupImages": false
     }
 ]
