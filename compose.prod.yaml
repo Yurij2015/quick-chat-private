@@ -9,6 +9,7 @@ services:
     restart: unless-stopped
     volumes:
       - .:/var/www/html
+      - ../../storage:/var/www/html/storage
     networks:
       - chat-network
     depends_on:
@@ -24,6 +25,7 @@ services:
       - "${APP_PORT:-8050}:80"
     volumes:
       - .:/var/www/html
+      - ../../storage:/var/www/html/storage
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
     networks:
       - chat-network
@@ -66,6 +68,7 @@ services:
       - "${REVERB_SERVER_PORT:-8051}:8080"
     volumes:
       - .:/var/www/html
+      - ../../storage:/var/www/html/storage
     networks:
       - chat-network
     depends_on:
@@ -80,6 +83,7 @@ services:
     command: php artisan queue:work --tries=3 --timeout=90
     volumes:
       - .:/var/www/html
+      - ../../storage:/var/www/html/storage
     networks:
       - chat-network
     depends_on:
