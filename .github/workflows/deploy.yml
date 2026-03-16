@@ -63,12 +63,21 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ matrix.server.port }}
           script: |
+            echo "Checking if base directory exists..."
             mkdir -p ${{ matrix.server.path }}/artifacts
             mkdir -p ${{ matrix.server.path }}/releases
             mkdir -p ${{ matrix.server.path }}/storage/app/public
             mkdir -p ${{ matrix.server.path }}/storage/framework/{cache,sessions,testing,views}
             mkdir -p ${{ matrix.server.path }}/storage/logs
+
+            echo "Setting permissions..."
             chmod -R 0777 ${{ matrix.server.path }}/storage || true
+            chmod -R 0777 ${{ matrix.server.path }}/artifacts || true
+            chmod -R 0777 ${{ matrix.server.path }}/releases || true
+
+            echo "Current directory status:"
+            ls -ld ${{ matrix.server.path }}
+            ls -ld ${{ matrix.server.path }}/artifacts
       - name: Upload
         uses: appleboy/scp-action@master
         with:
