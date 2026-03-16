@@ -27,15 +27,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /var/www/html
 
 # Copy the entire Laravel application code into the container
+# We copy it FIRST so that any existing storage structure is brought in
 COPY . /var/www/html
 
-# Ensure storage directory exists in the builder
-RUN mkdir -p /var/www/html/storage/app/public \
-    && mkdir -p /var/www/html/storage/framework/cache \
-    && mkdir -p /var/www/html/storage/framework/sessions \
-    && mkdir -p /var/www/html/storage/framework/testing \
-    && mkdir -p /var/www/html/storage/framework/views \
-    && mkdir -p /var/www/html/storage/logs
+# Ensure storage directory and its children exist explicitly
+# This guarantees that the COPY --from=builder command in the next stage will find these paths
+RUN mkdir -p storage/app/public \
+    && mkdir -p storage/framework/cache \
+    && mkdir -p storage/framework/sessions \
+    && mkdir -p storage/framework/testing \
+    && mkdir -p storage/framework/views \
+    && mkdir -p storage/logs \
+    && chmod -R 775 storage
 
 # Install Composer and dependencies
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
@@ -45,7 +48,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 FROM php:8.4-fpm AS production
 
 # Install only runtime libraries needed in production
-# libfcgi-bin and procps are required for the php-fpm-healthcheck script
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libicu-dev \
     libzip-dev \
@@ -63,22 +65,18 @@ RUN curl -o /usr/local/bin/php-fpm-healthcheck \
 COPY ./docker/production/php-fpm/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Copy the initial storage structure
-COPY --from=builder /var/www/html/storage/ /var/www/html/storage-init/
+# Set working directory BEFORE copying files
+WORKDIR /var/www/html
 
-# Copy PHP extensions and libraries from the builder stage
-COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
-COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
-COPY --from=builder /usr/local/bin/docker-php-ext-* /usr/local/bin/
+# Copy the initial storage structure and the app
+# Using absolute paths to avoid any ambiguity
+COPY --from=builder /var/www/html /var/www/html
+
+# Create a pristine copy of storage for volume initialization
+RUN cp -rp /var/www/html/storage /var/www/html/storage-init
 
 # Use the recommended production PHP configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-
-# Copy the application code and dependencies from the build stage
-COPY --from=builder /var/www/html /var/www/html
-
-# Set working directory
-WORKDIR /var/www/html
 
 # Ensure correct permissions
 RUN chown -R www-data:www-data /var/www/html
