@@ -17,7 +17,7 @@ FROM nginx:alpine
 COPY ./docker/nginx/conf.d/app.conf /etc/nginx/conf.d/default.conf
 
 # Copy Laravel's public assets from the builder stage
-COPY --from=builder /var/www/html/public /var/www/html/public
+COPY --from=builder /var/www/html/public/ /var/www/html/public/
 
 # Set the working directory to the public folder
 WORKDIR /var/www/html/public

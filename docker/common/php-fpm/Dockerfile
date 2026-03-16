@@ -29,6 +29,14 @@ WORKDIR /var/www/html
 # Copy the entire Laravel application code into the container
 COPY . /var/www/html
 
+# Ensure storage directory exists in the builder
+RUN mkdir -p /var/www/html/storage/app/public \
+    && mkdir -p /var/www/html/storage/framework/cache \
+    && mkdir -p /var/www/html/storage/framework/sessions \
+    && mkdir -p /var/www/html/storage/framework/testing \
+    && mkdir -p /var/www/html/storage/framework/views \
+    && mkdir -p /var/www/html/storage/logs
+
 # Install Composer and dependencies
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
@@ -56,7 +64,7 @@ COPY ./docker/production/php-fpm/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Copy the initial storage structure
-COPY --from=builder /var/www/html/storage /var/www/html/storage-init
+COPY --from=builder /var/www/html/storage/ /var/www/html/storage-init/
 
 # Copy PHP extensions and libraries from the builder stage
 COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
