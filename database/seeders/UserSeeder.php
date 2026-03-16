@@ -10,19 +10,23 @@ class UserSeeder extends Seeder
     public function run(): void
     {
 
-        $admin = User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('password'),
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin User',
+                'password' => bcrypt('password'),
+            ]
+        );
         $admin->assignRole('admin');
 
-        $users = User::factory(20)->create([
-            'password' => bcrypt('password'),
-        ]);
+        if (User::count() <= 1) {
+            $users = User::factory(20)->create([
+                'password' => bcrypt('password'),
+            ]);
 
-        foreach ($users as $user) {
-            $user->assignRole('user');
+            foreach ($users as $user) {
+                $user->assignRole('user');
+            }
         }
     }
 }
