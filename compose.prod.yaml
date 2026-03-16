@@ -10,9 +10,13 @@ services:
     volumes:
       - .:/var/www/html
       - ../../storage:/var/www/html/storage
+    links:
+      - mysql:mysql
     depends_on:
       - mysql
       - redis
+    networks:
+      - production-network
 
   # Web Server (Nginx) to proxy to PHP-FPM
   webserver:
@@ -27,6 +31,8 @@ services:
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - laravelfpm
+    networks:
+      - production-network
 
   # Database
   mysql:
@@ -41,6 +47,8 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
     volumes:
       - prod-db-data:/var/lib/mysql
+    networks:
+      - production-network
 
   # Redis for queues, cache, and Reverb
   redis:
@@ -49,6 +57,8 @@ services:
     restart: unless-stopped
     volumes:
       - prod-redis-data:/data
+    networks:
+      - production-network
 
   # Reverb WebSocket Server
   reverb:
@@ -61,9 +71,13 @@ services:
     volumes:
       - .:/var/www/html
       - ../../storage:/var/www/html/storage
+    links:
+      - mysql:mysql
     depends_on:
       - redis
       - mysql
+    networks:
+      - production-network
 
   # Queue Worker
   worker:
@@ -74,9 +88,17 @@ services:
     volumes:
       - .:/var/www/html
       - ../../storage:/var/www/html/storage
+    links:
+      - mysql:mysql
     depends_on:
       - redis
       - mysql
+    networks:
+      - production-network
+
+networks:
+  production-network:
+    name: chat-app-prod-net
 
 volumes:
   prod-db-data:
