@@ -27,7 +27,10 @@ jobs:
       - name: Create deployment artifact
         env:
           GITHUB_SHA: ${{ github.sha }}
-        run: tar -czf "${GITHUB_SHA}".tar.gz --exclude=.git --exclude=node_modules *
+        run: |
+          tar -czf "${GITHUB_SHA}".tar.gz --exclude=.git --exclude=node_modules *
+          echo "Archive size:"
+          ls -lh "${GITHUB_SHA}".tar.gz
 
       - name: Store artifact for distribution
         uses: actions/upload-artifact@v4
@@ -63,11 +66,21 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ matrix.server.port }}
           script: |
-            echo "Checking if base directory exists..."
+            echo "Cleaning up disk space..."
+            docker system prune -f || true
+            docker builder prune -a -f || true
+
+            echo "Checking disk space..."
+            df -h
+
+            echo "Creating directories..."
             mkdir -p ${{ matrix.server.path }}/artifacts
             mkdir -p ${{ matrix.server.path }}/releases
             mkdir -p ${{ matrix.server.path }}/storage/app/public
-            mkdir -p ${{ matrix.server.path }}/storage/framework/{cache,sessions,testing,views}
+            mkdir -p ${{ matrix.server.path }}/storage/framework/cache
+            mkdir -p ${{ matrix.server.path }}/storage/framework/sessions
+            mkdir -p ${{ matrix.server.path }}/storage/framework/testing
+            mkdir -p ${{ matrix.server.path }}/storage/framework/views
             mkdir -p ${{ matrix.server.path }}/storage/logs
 
             echo "Setting permissions..."
@@ -75,8 +88,11 @@ jobs:
             chmod -R 0777 ${{ matrix.server.path }}/artifacts || true
             chmod -R 0777 ${{ matrix.server.path }}/releases || true
 
-            echo "Remove existing artifact if any"
-            rm -f ${{ matrix.server.path }}/artifacts/${{ github.sha }}.tar.gz || true
+            echo "Remove ALL existing artifacts to free space"
+            rm -rf ${{ matrix.server.path }}/artifacts/* || true
+
+            echo "Current disk space status:"
+            df -h
 
             echo "Current directory status:"
             ls -ld ${{ matrix.server.path }}
