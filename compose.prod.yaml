@@ -1,4 +1,4 @@
-name: chat-project-prod
+name: chat-app
 
 services:
   # PHP Server & Nginx (For HTTP Requests)

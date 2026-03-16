@@ -6,7 +6,7 @@
         "username": "yurii",
         "path": "/home/yurii/quick-chat",
         "beforeHooks": "echo 'Starting deployment for Quick Chat...'",
-        "afterHooks": "cd $RELEASE_PATH && docker compose -p chat-app -f compose.prod.yaml up -d --remove-orphans --build && docker compose -p chat-app exec -T laravelfpm php artisan migrate --force",
+        "afterHooks": "cd $RELEASE_PATH && docker compose -p chat-app -f compose.prod.yaml up -d --remove-orphans --build && docker compose -p chat-app exec -T laravelfpm php -r 'for($i=0;$i<30;$i++){if(@fsockopen(\"mysql\", 3306)){exit(0);}usleep(500000);}' && docker compose -p chat-app exec -T laravelfpm php artisan migrate --force",
         "backupImages": false
     }
 ]
