@@ -55,6 +55,20 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: app-build
+      - name: Create directories and set permissions
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ matrix.server.ip }}
+          username: ${{ matrix.server.username }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ matrix.server.port }}
+          script: |
+            mkdir -p ${{ matrix.server.path }}/artifacts
+            mkdir -p ${{ matrix.server.path }}/releases
+            mkdir -p ${{ matrix.server.path }}/storage/app/public
+            mkdir -p ${{ matrix.server.path }}/storage/framework/{cache,sessions,testing,views}
+            mkdir -p ${{ matrix.server.path }}/storage/logs
+            chmod -R 0777 ${{ matrix.server.path }}/storage || true
       - name: Upload
         uses: appleboy/scp-action@master
         with:
@@ -78,16 +92,6 @@ jobs:
             mkdir -p "${{ matrix.server.path }}/releases/${GITHUB_SHA}"
             tar xzf ${{ matrix.server.path }}/artifacts/${GITHUB_SHA}.tar.gz -C "${{ matrix.server.path }}/releases/${GITHUB_SHA}"
             rm -rf ${{ matrix.server.path }}/releases/${GITHUB_SHA}/storage
-
-            mkdir -p ${{ matrix.server.path }}/storage/app
-            mkdir -p ${{ matrix.server.path }}/storage/public
-            mkdir -p ${{ matrix.server.path }}/storage/framework
-            mkdir -p ${{ matrix.server.path }}/storage/logs
-            mkdir -p ${{ matrix.server.path }}/storage/framework/cache
-            mkdir -p ${{ matrix.server.path }}/storage/framework/sessions
-            mkdir -p ${{ matrix.server.path }}/storage/framework/testing
-            mkdir -p ${{ matrix.server.path }}/storage/framework/views
-            chmod -R 0777 ${{ matrix.server.path }}/storage || true
 
   run-before-hooks:
     name: "${{ matrix.server.name }}: Before hook"
@@ -150,7 +154,7 @@ jobs:
               printf "%s\n" "$LARAVEL_ENV" > "${BASE_PATH}/.env"
               echo "Updated .env from GitHub secrets/vars."
             fi
-            
+
             # If no .env is created and backup exists, restore it (fallback)
             if [ ! -s "${BASE_PATH}/.env" ] && [ -e "${BASE_PATH}/.env_prev" ]; then
               cp "${BASE_PATH}/.env_prev" "${BASE_PATH}/.env"
@@ -160,7 +164,7 @@ jobs:
             # Copy the .env configuration and symlink the shared storage directory to this deployment
             cp ${BASE_PATH}/.env $RELEASE_PATH/.env
             ln -s -f $STORAGE_PATH $RELEASE_PATH/storage
-            
+
             # Switch the active release
             ln -s -n -f $RELEASE_PATH $ACTIVE_RELEASE_PATH
 
