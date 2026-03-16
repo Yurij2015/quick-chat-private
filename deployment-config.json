@@ -6,7 +6,7 @@
         "username": "yurii",
         "path": "/home/yurii/quick-chat",
         "beforeHooks": "echo 'Starting deployment for Quick Chat...'",
-        "afterHooks": "cd $RELEASE_PATH && docker compose -p chat-app -f compose.prod.yaml up -d --remove-orphans --build && echo 'Waiting 20s for MySQL DNS and initialization...' && sleep 20 && docker exec chat-app-prod-php php artisan migrate --force",
+        "afterHooks": "cd $RELEASE_PATH && sed -i 's/DB_HOST=mysql/DB_HOST=chat-app-prod-mysql/g' .env && docker compose -p chat-app -f compose.prod.yaml up -d --remove-orphans --build && echo 'Waiting 30s for DNS stabilization...' && sleep 30 && docker exec chat-app-prod-php php artisan config:clear && docker exec chat-app-prod-php php artisan migrate --force",
         "backupImages": false
     }
 ]

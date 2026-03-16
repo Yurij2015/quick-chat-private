@@ -10,8 +10,6 @@ services:
     volumes:
       - .:/var/www/html
       - ../../storage:/var/www/html/storage
-    networks:
-      - chat-network
     depends_on:
       - mysql
       - redis
@@ -27,8 +25,6 @@ services:
       - .:/var/www/html
       - ../../storage:/var/www/html/storage
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
-    networks:
-      - chat-network
     depends_on:
       - laravelfpm
 
@@ -45,8 +41,6 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
     volumes:
       - prod-db-data:/var/lib/mysql
-    networks:
-      - chat-network
 
   # Redis for queues, cache, and Reverb
   redis:
@@ -55,8 +49,6 @@ services:
     restart: unless-stopped
     volumes:
       - prod-redis-data:/data
-    networks:
-      - chat-network
 
   # Reverb WebSocket Server
   reverb:
@@ -69,8 +61,6 @@ services:
     volumes:
       - .:/var/www/html
       - ../../storage:/var/www/html/storage
-    networks:
-      - chat-network
     depends_on:
       - redis
       - mysql
@@ -84,15 +74,9 @@ services:
     volumes:
       - .:/var/www/html
       - ../../storage:/var/www/html/storage
-    networks:
-      - chat-network
     depends_on:
       - redis
       - mysql
-
-networks:
-  chat-network:
-    driver: bridge
 
 volumes:
   prod-db-data:
