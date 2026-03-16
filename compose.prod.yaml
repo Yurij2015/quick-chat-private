@@ -11,6 +11,7 @@ services:
     restart: unless-stopped
     volumes:
       - prod-laravel-storage:/var/www/html/storage
+      - prod-laravel-public:/var/www/html/public
     depends_on:
       mysql:
         condition: service_healthy
@@ -30,6 +31,7 @@ services:
       - "${APP_PORT:-8050}:80"
     volumes:
       - prod-laravel-storage:/var/www/html/storage:ro
+      - prod-laravel-public:/var/www/html/public:ro
     depends_on:
       - laravelfpm
     networks:
@@ -112,4 +114,6 @@ volumes:
   prod-redis-data:
     driver: local
   prod-laravel-storage:
+    driver: local
+  prod-laravel-public:
     driver: local

@@ -21,6 +21,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pcntl \
     && pecl install redis \
     && docker-php-ext-enable redis \
+    # Install Node.js for asset building
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs \
     && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Set the working directory inside the container
@@ -44,6 +47,9 @@ RUN rm -rf storage && mkdir -p storage/app/public \
 # Install Composer and dependencies
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
+
+# Build frontend assets
+RUN npm install && npm run build
 
 # Stage 2: Production environment
 FROM php:8.4-fpm AS production
@@ -79,8 +85,9 @@ WORKDIR /var/www/html
 # Using absolute paths to avoid any ambiguity
 COPY --from=builder /var/www/html /var/www/html
 
-# Create a pristine copy of storage for volume initialization
-RUN cp -rp /var/www/html/storage /var/www/html/storage-init
+# Create a pristine copy of storage and public for volume initialization
+RUN cp -rp /var/www/html/storage /var/www/html/storage-init \
+    && cp -rp /var/www/html/public /var/www/html/public-init
 
 # Use the recommended production PHP configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"

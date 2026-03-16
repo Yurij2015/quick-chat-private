@@ -7,6 +7,14 @@ if [ -d /var/www/html/storage-init ] && [ -z "$(ls -A /var/www/html/storage 2>/d
     cp -rp /var/www/html/storage-init/. /var/www/html/storage/
 fi
 
+# Always sync the public directory to ensure Nginx sees the latest assets from this image version
+if [ -d /var/www/html/public-init ]; then
+    echo "Syncing public assets..."
+    # We use -u to only copy newer files, but for a release, we probably want to sync everything
+    # and remove old assets if we were being thorough. For now, simple copy is safest.
+    cp -rp /var/www/html/public-init/. /var/www/html/public/
+fi
+
 # Ensure correct permissions on the storage directory
 # Since we are running as www-data, we can't chown, but we assume the volume is writable
 # or the base image setup handled it.
