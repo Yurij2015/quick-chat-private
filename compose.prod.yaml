@@ -13,10 +13,8 @@ services:
     links:
       - mysql:mysql
     depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_started
+      - mysql
+      - redis
     networks:
       - production-network
 
@@ -53,8 +51,8 @@ services:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 30s
+      retries: 10
+      start_period: 60s
     networks:
       - production-network
 
@@ -82,10 +80,8 @@ services:
     links:
       - mysql:mysql
     depends_on:
-      redis:
-        condition: service_started
-      mysql:
-        condition: service_healthy
+      - redis
+      - mysql
     networks:
       - production-network
 
@@ -101,10 +97,8 @@ services:
     links:
       - mysql:mysql
     depends_on:
-      redis:
-        condition: service_started
-      mysql:
-        condition: service_healthy
+      - redis
+      - mysql
     networks:
       - production-network
 
