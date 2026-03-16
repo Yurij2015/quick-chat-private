@@ -79,8 +79,14 @@ jobs:
             tar xzf ${{ matrix.server.path }}/artifacts/${GITHUB_SHA}.tar.gz -C "${{ matrix.server.path }}/releases/${GITHUB_SHA}"
             rm -rf ${{ matrix.server.path }}/releases/${GITHUB_SHA}/storage
 
-            mkdir -p ${{ matrix.server.path }}/storage/{app,public,framework,logs}
-            mkdir -p ${{ matrix.server.path }}/storage/framework/{cache,sessions,testing,views}
+            mkdir -p ${{ matrix.server.path }}/storage/app
+            mkdir -p ${{ matrix.server.path }}/storage/public
+            mkdir -p ${{ matrix.server.path }}/storage/framework
+            mkdir -p ${{ matrix.server.path }}/storage/logs
+            mkdir -p ${{ matrix.server.path }}/storage/framework/cache
+            mkdir -p ${{ matrix.server.path }}/storage/framework/sessions
+            mkdir -p ${{ matrix.server.path }}/storage/framework/testing
+            mkdir -p ${{ matrix.server.path }}/storage/framework/views
             chmod -R 0777 ${{ matrix.server.path }}/storage
 
   run-before-hooks:
