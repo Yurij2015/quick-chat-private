@@ -50,9 +50,9 @@ services:
     volumes:
       - prod-db-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -u root -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
+      test: ["CMD", "mysqladmin", "ping", "-p$${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
-      timeout: 10s
+      timeout: 5s
       retries: 5
       start_period: 30s
     networks:
